@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acme-challenge-service
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  acme-challenge-mapping
+      # known based uri to reach for HTTP-01 validation challenge
+      prefix: /.well-known/acme-challenge
+      # Because ambassador will by default rewrite url with service name, just configure to not rewrite anything
+      rewrite: ""
+      # TODO : Service name should point on this service who will use selector to reach the pod
+      # like service: acme-challenge-service
+      # Here we forward to another service
+      service: acme-challenge-service 
+spec:
+  ports:
+  - port: 80
+    targetPort: 8089
+  selector:
+    # How to recognize the 
+    # See https://github.com/datawire/ambassador/issues/780 
+    certmanager.k8s.io/acme-http-domain: "161156668"
+    certmanager.k8s.io/acme-http-token: "1100680922"    
+    
